@@ -1,48 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { Opportunity } from '../../types';
 import { useApp } from '../../context/AppContext';
-import { SamuraiMascot } from '../Mascot/SamuraiMascot';
 import { Sparkles, Shield, RefreshCw, CheckCircle2, X, Send, Sliders } from 'lucide-react';
 import { sounds } from '../../utils/audio';
 
 export const ReplyModal: React.FC = () => {
   const { activeReplyModal, setActiveReplyModal, approveAndPublishReply } = useApp();
 
-  const [selectedTone, setSelectedTone] = useState<'Thoughtful' | 'Short' | 'Technical' | 'Witty'>('Thoughtful');
+  const [selectedTone, setSelectedTone] = useState<'The Hunter' | 'The Strategist' | 'The Creator' | 'The Sensei'>('The Hunter');
   const [draftText, setDraftText] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [showCelebration, setShowCelebration] = useState<boolean>(false);
 
   // Pre-generate drafts for the 4 tones
-  const TONE_DRAFTS: Record<'Thoughtful' | 'Short' | 'Technical' | 'Witty', string> = {
-    Thoughtful:
-      "Great question! We've found that early-stage keyword tracking works best when you set strict intent filters before human review. Zero auto-posting, pure signal discovery.",
-    Short:
-      "Focus on intent scoring + human approval. Autoposting loops get rate limited fast. Co-pilots win.",
-    Technical:
-      "We implement a multi-stage funnel: 1. OAuth 2.0 PKCE 2. Recent Search poll (cached 15m) 3. LLM JSON relevance scoring (>0.6) 4. Human tap to publish via POST /2/tweets.",
-    Witty:
-      "Unattended bot spam is so 2024 🙅‍♂️. Use an AI Samurai to discover the signals, review in 1 tap, and keep your account safe!",
+  const TONE_DRAFTS: Record<'The Hunter' | 'The Strategist' | 'The Creator' | 'The Sensei', string> = {
+    'The Hunter':
+      "SocialSamurai solves this instantly. It uses real-time intent filters on X & Reddit to surface founders actively looking for solutions, cutting through all generic noise in 2 clicks.",
+    'The Strategist':
+      "Evaluating intent discovery requires two core pillars: heuristic intent scoring and strict rate limit compliance. SocialSamurai applies OAuth 2.0 PKCE with local heuristic LLM ranking.",
+    'The Creator':
+      "Love this thread! The game changer for us was turning outbound hunting into inbound problem-solving. Find people asking questions in your domain and share actionable teardowns.",
+    'The Sensei':
+      "Mastery in social growth comes from discipline over automation. Focus on 5 high-intent conversations daily where you can offer genuine architecture breakdowns rather than spamming keywords.",
   };
 
   useEffect(() => {
     if (activeReplyModal) {
-      setDraftText(TONE_DRAFTS.Thoughtful);
-      setSelectedTone('Thoughtful');
+      setDraftText(TONE_DRAFTS['The Hunter']);
+      setSelectedTone('The Hunter');
       setShowCelebration(false);
     }
   }, [activeReplyModal]);
 
   if (!activeReplyModal) return null;
 
-  const handleSelectTone = (tone: 'Thoughtful' | 'Short' | 'Technical' | 'Witty') => {
+  const handleSelectTone = (tone: 'The Hunter' | 'The Strategist' | 'The Creator' | 'The Sensei') => {
     sounds.playClick();
     setSelectedTone(tone);
     setIsGenerating(true);
     setTimeout(() => {
       setDraftText(TONE_DRAFTS[tone]);
       setIsGenerating(false);
-    }, 300);
+    }, 250);
   };
 
   const handleRegenerate = () => {
@@ -50,10 +49,10 @@ export const ReplyModal: React.FC = () => {
     setIsGenerating(true);
     setTimeout(() => {
       setDraftText(
-        `${TONE_DRAFTS[selectedTone]} (Refined for maximum engagement based on your style)`
+        `${TONE_DRAFTS[selectedTone]} (Optimized with Anti-AI Slop Heuristics for maximum founder trust)`
       );
       setIsGenerating(false);
-    }, 400);
+    }, 350);
   };
 
   const handleApprove = () => {
@@ -70,24 +69,26 @@ export const ReplyModal: React.FC = () => {
   const charCount = draftText.length;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#080808]/95 backdrop-blur-2xl flex items-center justify-center p-4 overflow-y-auto">
-      <div className="max-w-2xl w-full bg-[#111111] border border-[#E3262E]/50 rounded-3xl p-6 sm:p-8 shadow-2xl relative my-auto">
+    <div className="fixed inset-0 z-50 bg-[#08080C]/95 backdrop-blur-2xl flex items-center justify-center p-4 overflow-y-auto font-sans select-none">
+      <div className="max-w-2xl w-full bg-[#12121A] border border-purple-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative my-auto">
         {/* Close Button */}
         <button
           onClick={() => setActiveReplyModal(null)}
-          className="absolute top-5 right-5 p-2 rounded-full bg-[#171717] text-[#A1A1AA] hover:text-[#F5F5F5] transition"
+          className="absolute top-5 right-5 p-2 rounded-full bg-[#181528] text-[#A1A1AA] hover:text-white transition"
         >
           <X className="w-5 h-5" />
         </button>
 
         {showCelebration ? (
           <div className="text-center py-10 space-y-4 animate-in zoom-in-95">
-            <SamuraiMascot state="celebration" size="hero" showSpeechBubble speechText="Clean strike. ⚔️" />
-            <h2 className="text-3xl font-black text-[#F5F5F5]">Clean Strike! ⚔️</h2>
-            <p className="text-sm text-[#A1A1AA]">
+            <div className="w-24 h-24 mx-auto rounded-3xl bg-[#1A112E] border-2 border-[#9333EA] p-2 shadow-[0_0_30px_rgba(147,51,234,0.5)] flex items-center justify-center text-4xl">
+              ⚔️
+            </div>
+            <h2 className="text-3xl font-black text-white font-heading uppercase">Clean Strike Published! ⚔️</h2>
+            <p className="text-sm text-[#A1A1AA] max-w-md mx-auto">
               Your AI-crafted reply has been approved & queued for publishing through your authorized connection.
             </p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold font-mono">
               <CheckCircle2 className="w-4 h-4" /> QUEUED FOR PUBLISHING
             </div>
           </div>
@@ -95,41 +96,43 @@ export const ReplyModal: React.FC = () => {
           <>
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
-              <SamuraiMascot state="working" size="sm" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#9333EA] shrink-0">
+                <img src="/hero_samurai.jpg" alt="Mascot" className="w-full h-full object-cover" />
+              </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-extrabold text-[#E3262E] uppercase">SAMURAI COMPOSER</span>
-                  <span className="text-[10px] bg-[#E3262E]/20 text-[#E3262E] px-2 py-0.5 rounded-full font-bold">
+                  <span className="text-xs font-black text-[#C084FC] uppercase font-heading tracking-wider">SAMURAI STRIKE STUDIO</span>
+                  <span className="text-[10px] bg-[#9333EA]/30 text-[#E9D5FF] px-2 py-0.5 rounded-full font-bold">
                     COST: 5 CREDITS
                   </span>
                 </div>
-                <h2 className="text-xl font-black text-[#F5F5F5]">Draft AI Response</h2>
+                <h2 className="text-xl font-black text-white font-heading uppercase">Craft High-Conversion Strike</h2>
               </div>
             </div>
 
             {/* Pinned Original Post */}
-            <div className="bg-[#080808] border border-white/10 rounded-2xl p-4 mb-6">
+            <div className="bg-[#0A0A10] border border-white/10 rounded-2xl p-4 mb-6">
               <div className="flex items-center justify-between text-xs text-[#A1A1AA] mb-2">
-                <span className="font-bold text-[#F5F5F5]">Replying to {activeReplyModal.authorHandle}</span>
-                <span className="uppercase text-[10px] font-mono">{activeReplyModal.platform}</span>
+                <span className="font-bold text-white font-heading">Replying to {activeReplyModal.authorHandle}</span>
+                <span className="uppercase text-[10px] font-mono text-[#C084FC]">{activeReplyModal.platform}</span>
               </div>
-              <p className="text-xs text-[#A1A1AA] italic leading-relaxed">
+              <p className="text-xs text-zinc-300 italic leading-relaxed">
                 "{activeReplyModal.postContent}"
               </p>
             </div>
 
             {/* Tone Selector Tabs */}
             <div className="mb-4">
-              <label className="block text-xs font-semibold text-[#A1A1AA] mb-2">Select AI Tone Voice:</label>
+              <label className="block text-xs font-semibold text-[#A1A1AA] mb-2">Select Samurai Persona Voice:</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {(['Thoughtful', 'Short', 'Technical', 'Witty'] as const).map((tone) => (
+                {(['The Hunter', 'The Strategist', 'The Creator', 'The Sensei'] as const).map((tone) => (
                   <button
                     key={tone}
                     onClick={() => handleSelectTone(tone)}
                     className={`py-2 px-3 rounded-xl text-xs font-bold border transition ${
                       selectedTone === tone
-                        ? 'bg-[#E3262E] border-[#E3262E] text-white shadow-lg shadow-[#E3262E]/20'
-                        : 'bg-[#171717] border-white/10 text-[#A1A1AA] hover:text-[#F5F5F5]'
+                        ? 'bg-[#9333EA] border-[#9333EA] text-white shadow-lg shadow-[#9333EA]/30'
+                        : 'bg-[#181528] border-white/10 text-[#A1A1AA] hover:text-white'
                     }`}
                   >
                     {tone}
@@ -141,17 +144,17 @@ export const ReplyModal: React.FC = () => {
             {/* AI Generated & Human Review Required Badges */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                  ⚡ AI GENERATED
+                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-[#C084FC] border border-purple-500/40">
+                  ⚡ ANTI-AI SLOP VERIFIED
                 </span>
-                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#E3262E]/20 text-[#E3262E] border border-[#E3262E]/40">
-                  🛡️ REVIEW REQUIRED
+                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                  🛡️ 1-TAP APPROVAL
                 </span>
               </div>
 
               <span
                 className={`text-xs font-mono font-bold ${
-                  charCount > charLimit ? 'text-red-500' : 'text-[#A1A1AA]'
+                  charCount > charLimit ? 'text-rose-500' : 'text-[#A1A1AA]'
                 }`}
               >
                 {charCount} / {charLimit}
@@ -160,13 +163,13 @@ export const ReplyModal: React.FC = () => {
 
             {/* Editable Text Area with Left Accent Bar */}
             <div className="relative mb-6">
-              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#E3262E] rounded-l-2xl" />
+              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#9333EA] rounded-l-2xl" />
               <textarea
                 value={draftText}
                 onChange={(e) => setDraftText(e.target.value)}
                 disabled={isGenerating}
                 rows={4}
-                className="w-full bg-[#171717] border border-white/10 rounded-2xl pl-5 pr-4 py-3 text-sm text-[#F5F5F5] focus:outline-none focus:border-[#E3262E] transition leading-relaxed resize-none"
+                className="w-full bg-[#0A0A10] border border-white/10 rounded-2xl pl-5 pr-4 py-3 text-sm text-zinc-100 focus:outline-none focus:border-[#9333EA] transition leading-relaxed resize-none font-sans"
               />
             </div>
 
@@ -175,15 +178,15 @@ export const ReplyModal: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleRegenerate}
-                  className="px-3 py-1.5 bg-[#171717] border border-white/10 hover:border-white/20 text-[#A1A1AA] hover:text-[#F5F5F5] rounded-xl transition flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-[#181528] border border-white/10 hover:border-purple-500/30 text-[#A1A1AA] hover:text-white rounded-xl transition flex items-center gap-1.5"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin text-[#C084FC]' : ''}`} />
                   <span>Regenerate</span>
                 </button>
               </div>
 
               <span className="text-[11px] text-[#A1A1AA]">
-                Human Approval strictly required before publishing.
+                Strict Human Authorization before post execution.
               </span>
             </div>
 
@@ -191,10 +194,10 @@ export const ReplyModal: React.FC = () => {
             <button
               onClick={handleApprove}
               disabled={charCount === 0 || charCount > charLimit}
-              className="w-full py-4 bg-gradient-to-r from-[#E3262E] to-[#7F1015] hover:from-[#f4333b] hover:to-[#911319] text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-[#E3262E]/30 transition-all flex items-center justify-center gap-2 active:scale-98 disabled:opacity-50"
+              className="w-full py-4 bg-gradient-to-r from-[#9333EA] via-[#A855F7] to-[#7E22CE] hover:from-[#A855F7] hover:to-[#9333EA] text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-[#9333EA]/40 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 border border-purple-400/30"
             >
               <Send className="w-4 h-4 fill-white" />
-              <span>APPROVE & QUEUE ⚔️</span>
+              <span>APPROVE & STRIKE ⚔️</span>
             </button>
           </>
         )}
@@ -202,3 +205,4 @@ export const ReplyModal: React.FC = () => {
     </div>
   );
 };
+

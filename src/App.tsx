@@ -5,6 +5,7 @@ import { Header } from './components/Layout/Header';
 import { MobileNav } from './components/Layout/MobileNav';
 
 // Views
+import { LandingHeroView } from './components/Landing/LandingHeroView';
 import { DashboardView } from './components/Dashboard/DashboardView';
 import { OpportunitiesView } from './components/Opportunities/OpportunitiesView';
 import { CreateView } from './components/Composer/CreateView';
@@ -29,6 +30,20 @@ const AppContent: React.FC = () => {
   const { currentView, onboardingComplete } = useApp();
   const [showOnboardingFlow, setShowOnboardingFlow] = useState<boolean>(false);
 
+  // If user is on the Landing / Pitch Hero Page
+  if (currentView === 'landing') {
+    return (
+      <>
+        <LandingHeroView />
+        <ReplyModal />
+        <ScanningModal />
+        <OAuthModal />
+        <PricingModal />
+        <SuccessModal />
+      </>
+    );
+  }
+
   // If onboarding not completed yet
   if (!onboardingComplete) {
     if (showOnboardingFlow) {
@@ -38,7 +53,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#080808] text-[#F5F5F5] font-sans flex flex-col md:flex-row antialiased selection:bg-[#E3262E] selection:text-white">
+    <div className="min-h-screen bg-[#08080C] text-[#F5F5F5] font-sans flex flex-col md:flex-row antialiased selection:bg-[#9333EA] selection:text-white">
       {/* Desktop Sidebar */}
       <Sidebar />
 
@@ -82,3 +97,4 @@ export function App() {
 }
 
 export default App;
+

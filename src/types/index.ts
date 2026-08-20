@@ -12,6 +12,43 @@ export type MascotState =
 
 export type PlatformType = 'x' | 'reddit' | 'linkedin';
 
+export type SamuraiArchetypeId =
+  | 'strategist'
+  | 'hunter'
+  | 'creator'
+  | 'warrior'
+  | 'sensei'
+  | 'ronin';
+
+export interface SamuraiArchetype {
+  id: SamuraiArchetypeId;
+  name: string;
+  title: string;
+  tagline: string;
+  color: string;
+  accentColor: string;
+  weapon: string;
+  avatarUrl: string;
+  aiPersonality: {
+    traits: string[];
+    description: string;
+    toneDefault: string;
+    promptDirective: string;
+  };
+  gameplayIdentity: {
+    archetype: string;
+    specialAbility: string;
+    specialDescription: string;
+    stats: {
+      speed: number;    // 1-5
+      damage: number;   // 1-5
+      defense: number;  // 1-5
+      critical: number; // 1-5
+      utility: number;  // 1-5
+    };
+  };
+}
+
 export interface SocialAccount {
   id: string;
   platform: PlatformType;
@@ -30,6 +67,32 @@ export interface SocialAccount {
   lastSynced?: string;
 }
 
+export type IntentClassification =
+  | 'Buying Intent'
+  | 'Problem Aware'
+  | 'Discussion'
+  | 'Thought Leadership'
+  | 'Community';
+
+export interface OpportunityWhyPicked {
+  productFit: string;
+  intent: string;
+  freshness: string;
+  competition: string;
+}
+
+export interface AuthorProfileIntelligence {
+  handle: string;
+  name: string;
+  avatar: string;
+  bio: string;
+  followers?: string;
+  recentActivity: string;
+  relevantTopics: string[];
+  aiSummary: string;
+  recommendation: 'High Value — Engage Immediately' | 'Worth Engaging' | 'Optional Lead';
+}
+
 export interface Opportunity {
   id: string;
   platform: PlatformType;
@@ -38,23 +101,55 @@ export interface Opportunity {
   authorAvatar: string;
   postContent: string;
   matchedTopic: string;
-  relevanceScore: number; // 0-100
-  intentTag: 'High Intent' | 'Technical' | 'Founder Question' | 'Product Launch' | 'General';
-  aiReasoning: string;
+  opportunityScore: number; // 0-100
+  scoreTier: 'Excellent Opportunity' | 'Worth Considering' | 'Low Priority';
+  intent: IntentClassification;
+  whySamuraiPickedThis: OpportunityWhyPicked;
+  profileIntelligence: AuthorProfileIntelligence;
   engagement: {
     likes: number;
     replies: number;
     reposts?: number;
   };
   postedAge: string;
+  isLead?: boolean;
+  isSpam?: boolean;
   saved?: boolean;
   dismissed?: boolean;
   replied?: boolean;
 }
 
+export type ReplyTone =
+  | 'Default'
+  | 'Helpful'
+  | 'Casual'
+  | 'Professional'
+  | 'Technical'
+  | 'Bold'
+  | 'Funny'
+  | 'Contrarian'
+  | 'Educational'
+  | 'Concise';
+
+export type ReplyLength = 'Short' | 'Medium' | 'Detailed';
+
+export interface AntiAISlopEvaluation {
+  slopRisk: 'Low' | 'Medium' | 'High';
+  score: number; // 0-100 (100 = perfectly natural/slop-free)
+  checks: {
+    noGenericPraise: boolean;
+    noCorporateFluff: boolean;
+    noRepetitivePhrasing: boolean;
+    authenticTone: boolean;
+    platformNative: boolean;
+  };
+  feedback: string;
+}
+
 export interface AIReplyOption {
-  tone: 'Thoughtful' | 'Short' | 'Technical' | 'Witty';
+  tone: ReplyTone;
   content: string;
+  slopEvaluation: AntiAISlopEvaluation;
 }
 
 export interface DraftReply {
@@ -63,10 +158,12 @@ export interface DraftReply {
   platform: PlatformType;
   originalPost: string;
   authorHandle: string;
-  selectedTone: 'Thoughtful' | 'Short' | 'Technical' | 'Witty';
+  selectedTone: ReplyTone;
+  selectedLength: ReplyLength;
   draftText: string;
   status: 'pending' | 'edited' | 'approved' | 'posted' | 'discarded';
   createdAt: string;
+  slopEvaluation: AntiAISlopEvaluation;
 }
 
 export interface ScheduledPost {
@@ -83,7 +180,7 @@ export interface InboxItem {
   platform: PlatformType;
   authorHandle: string;
   authorAvatar: string;
-  messageType: 'mention' | 'reply' | 'direct_message' | 'question';
+  messageType: 'mention' | 'reply' | 'question' | 'lead';
   content: string;
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
   aiSummary: string;
@@ -122,14 +219,25 @@ export interface NotificationItem {
   id: string;
   title: string;
   message: string;
-  type: 'opportunity' | 'battle' | 'system' | 'published';
+  type: 'opportunity' | 'battle' | 'system' | 'published' | 'lead';
   timestamp: string;
   read: boolean;
 }
 
+export interface ABTestResult {
+  id: string;
+  opportunityTopic: string;
+  variantA: { tone: ReplyTone; replies: number; engagementRate: number };
+  variantB: { tone: ReplyTone; replies: number; engagementRate: number };
+  winningTone: ReplyTone;
+  improvement: string;
+}
+
 export type ViewTab =
+  | 'landing'
   | 'dashboard'
   | 'opportunities'
+  | 'reply-studio'
   | 'create'
   | 'inbox'
   | 'calendar'

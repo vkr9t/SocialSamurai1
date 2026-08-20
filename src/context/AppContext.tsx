@@ -72,7 +72,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentView, setCurrentViewTab] = useState<ViewTab>('dashboard');
+  const [currentView, setCurrentViewTab] = useState<ViewTab>('landing');
   const [subscription, setSubscription] = useState<UserSubscription>(INITIAL_SUBSCRIPTION);
   const [usageLimits, setUsageLimits] = useState<UserUsageLimits>(INITIAL_LIMITS);
   const [accounts, setAccounts] = useState<SocialAccount[]>(INITIAL_ACCOUNTS);
@@ -132,7 +132,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       particleCount: 80,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#E3262E', '#FFFFFF', '#7F1015'],
+      colors: ['#9333EA', '#FFFFFF', '#C084FC', '#7E22CE'],
     });
 
     setOpportunities((prev) =>
