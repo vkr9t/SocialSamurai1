@@ -154,11 +154,86 @@ export const LandingHeroView: React.FC = () => {
         </div>
       </header>
 
-      {/* HERO SECTION (EXACT REPLICA OF THE PITCH MOCKUP) */}
+      {/* HERO SECTION — Samurai Radar Card LEFT, Text RIGHT */}
       <section className="relative z-10 pt-10 sm:pt-16 pb-16 lg:pb-24 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
-          {/* Left Column: Hero Text & CTAs */}
-          <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+
+          {/* ── LEFT COLUMN: SAMURAI RADAR CARD ── */}
+          <div className="lg:col-span-5 relative flex items-center justify-center order-2 lg:order-1">
+            {/* Japanese Vertical Kanji Banner — left edge */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center gap-3 select-none pointer-events-none z-20 opacity-80">
+              <span className="text-2xl font-serif text-[#C084FC] tracking-[0.3em] [writing-mode:vertical-rl] drop-shadow-[0_0_12px_rgba(168,85,247,0.8)] font-bold">
+                会話を支配する
+              </span>
+              <div className="w-6 h-6 rounded-md border border-[#9333EA] flex items-center justify-center text-xs text-[#E9D5FF] font-bold bg-[#1A112E]">
+                侍
+              </div>
+            </div>
+
+            {/* Glowing Plasma Orbit Rings */}
+            <div className="relative w-full max-w-[460px] aspect-square flex items-center justify-center">
+              {/* Outer dashed spin ring */}
+              <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#A855F7]/30 animate-spin [animation-duration:25s]" />
+              {/* Plasma glow aura */}
+              <div className="absolute -inset-4 rounded-full bg-gradient-to-tr from-[#9333EA]/30 via-transparent to-[#C084FC]/30 blur-2xl animate-aura" />
+              {/* Extra inner glow pulse */}
+              <div className="absolute inset-8 rounded-full bg-[#7C3AED]/20 blur-xl animate-pulse [animation-duration:3s]" />
+
+              {/* ── SAMURAI RADAR CARD ── */}
+              <div className="relative z-10 w-full h-full rounded-3xl overflow-hidden border border-purple-500/40 shadow-[0_0_60px_rgba(147,51,234,0.55)] group cursor-pointer">
+                {/* Samurai Image */}
+                <img
+                  src="/hero_samurai.jpg"
+                  alt="Cyber Samurai — Samurai Radar Scanning"
+                  className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
+                />
+
+                {/* Purple vignette overlay for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#08080C]/70 via-transparent to-[#08080C]/20 pointer-events-none" />
+
+                {/* ── TOP HUD BADGE: SAMURAI RADAR: SCANNING ── */}
+                <div className="absolute top-4 left-4 bg-[#08080C]/85 backdrop-blur-md border border-purple-500/50 rounded-xl px-3 py-1.5 flex items-center gap-2 shadow-lg">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                  <span className="text-[11px] font-mono font-bold text-white uppercase tracking-widest">
+                    SAMURAI RADAR: SCANNING
+                  </span>
+                </div>
+
+                {/* ── BOTTOM STRIP: PERSONA + BATTLE BUTTON ── */}
+                <div className="absolute bottom-4 left-4 right-4 bg-[#08080C]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-2xl">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-br from-[#9333EA]/40 to-[#5B21B6]/40 border border-[#9333EA]/60 flex items-center justify-center text-sm shadow-inner">
+                      ⚔️
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-black text-white font-heading uppercase tracking-wider leading-none">
+                        Current Persona
+                      </p>
+                      <p className="text-[10px] text-[#C084FC] mt-0.5 truncate">
+                        The Hunter (High-Conviction Strikes)
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      sounds.playSlash();
+                      setCurrentView('battle');
+                    }}
+                    className="shrink-0 px-4 py-2 bg-gradient-to-r from-[#9333EA] to-[#7E22CE] hover:from-[#A855F7] hover:to-[#9333EA] text-white font-black text-[11px] uppercase tracking-widest rounded-xl transition-all duration-200 flex items-center gap-1.5 shadow-lg shadow-[#9333EA]/50 border border-purple-400/30"
+                  >
+                    <Swords className="w-3.5 h-3.5" />
+                    <span>Battle</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT COLUMN: HEADLINE, SUBHEADING, CTAs, STATS ── */}
+          <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-left order-1 lg:order-2">
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1A112E]/80 border border-[#9333EA]/40 backdrop-blur-md shadow-[0_0_15px_rgba(147,51,234,0.25)]">
               <Sparkles className="w-3.5 h-3.5 text-[#C084FC] animate-pulse" />
@@ -167,21 +242,22 @@ export const LandingHeroView: React.FC = () => {
               </span>
             </div>
 
-            {/* Oswald Giant Headline */}
+            {/* Oswald Giant Headline — brand-guideline Oswald font */}
             <div className="space-y-1">
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[76px] font-black uppercase tracking-tight text-white font-heading leading-[0.95]">
-                FIND THE CONVERSATIONS{' '}
+                FIND THE{' '}
+                <span className="block">CONVERSATIONS</span>
                 <span className="block bg-gradient-to-r from-[#C084FC] via-[#A855F7] to-[#7E22CE] bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(168,85,247,0.5)]">
                   WORTH JOINING.
                 </span>
               </h1>
             </div>
 
-            {/* Horizontal Line Accent */}
-            <div className="w-20 h-1 bg-gradient-to-r from-[#9333EA] to-transparent rounded-full" />
+            {/* Brand guideline accent line */}
+            <div className="w-16 h-[3px] bg-gradient-to-r from-[#9333EA] to-transparent rounded-full" />
 
-            {/* Subheading */}
-            <p className="text-base sm:text-lg text-[#A1A1AA] max-w-xl font-normal leading-relaxed">
+            {/* Subheading — Inter body font per brand guidelines */}
+            <p className="text-base sm:text-lg text-[#A1A1AA] max-w-xl font-normal leading-relaxed font-sans">
               Discover relevant conversations, craft powerful replies, and grow faster on social media with AI + strategy.
             </p>
 
@@ -203,7 +279,7 @@ export const LandingHeroView: React.FC = () => {
                   sounds.playClick();
                   setShowDemoVideoModal(true);
                 }}
-                className="px-6 py-4 rounded-2xl bg-[#12121A]/80 hover:bg-[#1A1A26] border border-white/10 hover:border-purple-500/40 text-white font-semibold text-base backdrop-blur-md transition-all duration-200 flex items-center gap-3 group"
+                className="px-6 py-4 rounded-2xl bg-[#12121A]/80 hover:bg-[#1A1A26] border border-white/10 hover:border-[#9333EA]/40 text-white font-semibold text-base backdrop-blur-md transition-all duration-200 flex items-center gap-3 group"
               >
                 <div className="w-7 h-7 rounded-full bg-white/10 group-hover:bg-[#9333EA] flex items-center justify-center transition-colors">
                   <Play className="w-3.5 h-3.5 fill-white text-white ml-0.5" />
@@ -212,91 +288,34 @@ export const LandingHeroView: React.FC = () => {
               </button>
             </div>
 
-            {/* Glass Stats Row */}
+            {/* Glass Stats Row — brand guideline dark charcoal cards */}
             <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 max-w-lg">
-              <div className="bg-[#12121A]/70 border border-white/10 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md hover:border-purple-500/30 transition">
+              <div className="bg-[#111111]/80 border border-white/10 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md hover:border-[#9333EA]/40 hover:shadow-[0_0_16px_rgba(147,51,234,0.2)] transition-all duration-200">
                 <div className="flex items-center gap-2 mb-1">
                   <Users className="w-4 h-4 text-[#C084FC]" />
                   <span className="text-xl sm:text-2xl font-black font-heading text-white">10K+</span>
                 </div>
-                <p className="text-[11px] text-[#A1A1AA] uppercase tracking-wider font-medium">Active Users</p>
+                <p className="text-[11px] text-[#A1A1AA] uppercase tracking-wider font-medium font-sans">Active Users</p>
               </div>
 
-              <div className="bg-[#12121A]/70 border border-white/10 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md hover:border-purple-500/30 transition">
+              <div className="bg-[#111111]/80 border border-white/10 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md hover:border-[#9333EA]/40 hover:shadow-[0_0_16px_rgba(147,51,234,0.2)] transition-all duration-200">
                 <div className="flex items-center gap-2 mb-1">
                   <Zap className="w-4 h-4 text-[#C084FC]" />
                   <span className="text-xl sm:text-2xl font-black font-heading text-white">2M+</span>
                 </div>
-                <p className="text-[11px] text-[#A1A1AA] uppercase tracking-wider font-medium">Conversations Found</p>
+                <p className="text-[11px] text-[#A1A1AA] uppercase tracking-wider font-medium font-sans">Conversations Found</p>
               </div>
 
-              <div className="bg-[#12121A]/70 border border-white/10 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md hover:border-purple-500/30 transition">
+              <div className="bg-[#111111]/80 border border-white/10 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md hover:border-[#9333EA]/40 hover:shadow-[0_0_16px_rgba(147,51,234,0.2)] transition-all duration-200">
                 <div className="flex items-center gap-2 mb-1">
                   <Shield className="w-4 h-4 text-[#C084FC]" />
                   <span className="text-xl sm:text-2xl font-black font-heading text-white">98%</span>
                 </div>
-                <p className="text-[11px] text-[#A1A1AA] uppercase tracking-wider font-medium">Success Rate</p>
+                <p className="text-[11px] text-[#A1A1AA] uppercase tracking-wider font-medium font-sans">Success Rate</p>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Hero Graphic + Japanese Kanji + Swirling Purple Aura */}
-          <div className="lg:col-span-5 relative flex items-center justify-center">
-            {/* Japanese Vertical Kanji Banner on Right Edge */}
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center gap-3 select-none pointer-events-none z-20 opacity-85">
-              <span className="text-2xl font-serif text-[#C084FC] tracking-[0.3em] [writing-mode:vertical-rl] drop-shadow-[0_0_12px_rgba(168,85,247,0.8)] font-bold">
-                会話を支配する
-              </span>
-              <div className="w-6 h-6 rounded-md border border-[#9333EA] flex items-center justify-center text-xs text-[#E9D5FF] font-bold bg-[#1A112E]">
-                侍
-              </div>
-            </div>
-
-            {/* Glowing Swirling Plasma Orbit Rings behind Samurai */}
-            <div className="relative w-full max-w-[460px] aspect-square flex items-center justify-center">
-              {/* Outer Swirl Ring */}
-              <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#A855F7]/30 animate-spin [animation-duration:25s]" />
-              {/* Inner Glowing Plasma Arc */}
-              <div className="absolute -inset-4 rounded-full bg-gradient-to-tr from-[#9333EA]/30 via-transparent to-[#C084FC]/30 blur-2xl animate-aura" />
-
-              {/* Main Samurai Graphic */}
-              <div className="relative z-10 w-full h-full rounded-3xl overflow-hidden border border-purple-500/30 shadow-[0_0_50px_rgba(147,51,234,0.45)] group">
-                <img
-                  src="/hero_samurai.jpg"
-                  alt="Cyber Samurai Hero"
-                  className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
-                />
-
-                {/* Cyber HUD Overlay Badges */}
-                <div className="absolute top-4 left-4 bg-[#08080C]/80 backdrop-blur-md border border-purple-500/40 rounded-xl px-3 py-1.5 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-[11px] font-mono font-bold text-white uppercase">SAMURAI RADAR: SCANNING</span>
-                </div>
-
-                <div className="absolute bottom-4 left-4 right-4 bg-[#08080C]/85 backdrop-blur-md border border-white/10 rounded-2xl p-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-[#9333EA]/30 border border-[#9333EA] flex items-center justify-center text-xs">
-                      ⚔️
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-white font-heading uppercase">Current Persona</p>
-                      <p className="text-[10px] text-[#C084FC]">The Hunter (High-Conviction Strikes)</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      sounds.playSlash();
-                      setCurrentView('battle');
-                    }}
-                    className="px-3 py-1.5 bg-[#9333EA] hover:bg-[#A855F7] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-1.5 shadow-md shadow-[#9333EA]/40"
-                  >
-                    <Swords className="w-3.5 h-3.5" />
-                    <span>Battle</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* TRUSTED BY LOGO BAR */}
@@ -516,10 +535,22 @@ export const LandingHeroView: React.FC = () => {
           </p>
         </div>
 
-        {/* Archetype Selector Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+        {/* Archetype Selector Grid — Exactly matching the 6 avatar cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
           {SAMURAI_ARCHETYPES.map((arch) => {
             const isSelected = selectedPersona.id === arch.id;
+            const icon =
+              arch.id === 'hunter'
+                ? '🎯'
+                : arch.id === 'strategist'
+                ? '♟️'
+                : arch.id === 'creator'
+                ? '🎨'
+                : arch.id === 'warrior'
+                ? '⚔️'
+                : arch.id === 'sensei'
+                ? '📜'
+                : '🌙';
             return (
               <button
                 key={arch.id}
@@ -527,19 +558,34 @@ export const LandingHeroView: React.FC = () => {
                   sounds.playClick();
                   setSelectedPersona(arch);
                 }}
-                className={`p-4 rounded-2xl border transition-all text-left flex flex-col justify-between min-h-[120px] ${
+                className={`group rounded-2xl overflow-hidden border transition-all duration-300 text-left flex flex-col ${
                   isSelected
-                    ? 'bg-[#1D1236] border-[#9333EA] shadow-[0_0_20px_rgba(147,51,234,0.4)] scale-105'
-                    : 'bg-[#12121A] border-white/10 hover:border-white/20'
+                    ? 'bg-[#1D1236] border-[#A855F7] shadow-[0_0_30px_rgba(168,85,247,0.55)] scale-105 ring-2 ring-purple-400/40'
+                    : 'bg-[#111118] border-white/10 hover:border-purple-500/40 hover:bg-[#161622] hover:-translate-y-1'
                 }`}
               >
-                <div>
-                  <span className="text-2xl mb-1 block">
-                    {arch.id === 'hunter' ? '🎯' : arch.id === 'strategist' ? '♟️' : arch.id === 'creator' ? '🎨' : arch.id === 'warrior' ? '⚔️' : arch.id === 'sensei' ? '📜' : '🌙'}
-                  </span>
-                  <h3 className="text-sm font-bold text-white font-heading uppercase">{arch.name}</h3>
+                {/* Character Artwork */}
+                <div className="relative aspect-square w-full overflow-hidden bg-[#0A0A10]">
+                  <img
+                    src={arch.avatarUrl}
+                    alt={arch.name}
+                    className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111118] via-transparent to-transparent opacity-80" />
                 </div>
-                <p className="text-[10px] text-[#A1A1AA] line-clamp-1">{arch.aiPersonality.traits[0]}</p>
+
+                {/* Bottom Pill Information */}
+                <div className="p-3 text-center flex flex-col items-center justify-center gap-1 bg-[#0D0D14]/90">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <span className="text-sm">{icon}</span>
+                    <h3 className="text-xs sm:text-sm font-black text-white font-heading uppercase tracking-wide">
+                      {arch.name}
+                    </h3>
+                  </div>
+                  <p className="text-[10px] text-[#A1A1AA] font-sans font-medium">
+                    {arch.aiPersonality.traits[0]}
+                  </p>
+                </div>
               </button>
             );
           })}
@@ -548,9 +594,9 @@ export const LandingHeroView: React.FC = () => {
         {/* Selected Persona Deep Dive Card */}
         <div className="bg-[#12121A] border border-purple-500/30 rounded-3xl p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center shadow-2xl">
           <div className="lg:col-span-4 flex flex-col items-center text-center space-y-4">
-            <div className="w-28 h-28 rounded-3xl bg-[#1A112E] border-2 border-[#9333EA] p-2 shadow-[0_0_30px_rgba(147,51,234,0.4)] flex items-center justify-center">
+            <div className="w-32 h-32 rounded-3xl bg-[#1A112E] border-2 border-[#9333EA] p-1.5 shadow-[0_0_30px_rgba(147,51,234,0.4)] flex items-center justify-center overflow-hidden">
               <img
-                src="/hero_samurai.jpg"
+                src={selectedPersona.avatarUrl}
                 alt={selectedPersona.name}
                 className="w-full h-full object-cover rounded-2xl"
               />

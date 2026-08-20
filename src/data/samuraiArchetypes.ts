@@ -9,7 +9,7 @@ export const SAMURAI_ARCHETYPES: SamuraiArchetype[] = [
     color: '#E3262E',
     accentColor: '#FF4D55',
     weapon: 'Dual Shigure Katana',
-    avatarUrl: '/mascot/mascot_focused.png',
+    avatarUrl: '/avatars/hunter.png',
     aiPersonality: {
       traits: ['Direct', 'Confident', 'Concise', 'Opportunity-focused'],
       description:
@@ -39,7 +39,7 @@ export const SAMURAI_ARCHETYPES: SamuraiArchetype[] = [
     color: '#3B82F6',
     accentColor: '#60A5FA',
     weapon: 'Tactical Nodachi & War Fan',
-    avatarUrl: '/mascot/mascot_thinking.png',
+    avatarUrl: '/avatars/strategist.png',
     aiPersonality: {
       traits: ['Analytical', 'Structured', 'Evidence-driven', 'Calm'],
       description:
@@ -69,7 +69,7 @@ export const SAMURAI_ARCHETYPES: SamuraiArchetype[] = [
     color: '#8B5CF6',
     accentColor: '#A78BFA',
     weapon: 'Twin Chained Sickles (Kusarigama)',
-    avatarUrl: '/mascot/mascot_idea.png',
+    avatarUrl: '/avatars/creator.png',
     aiPersonality: {
       traits: ['Creative', 'Energetic', 'Conversational', 'Expressive'],
       description:
@@ -99,7 +99,7 @@ export const SAMURAI_ARCHETYPES: SamuraiArchetype[] = [
     color: '#F59E0B',
     accentColor: '#FBBF24',
     weapon: 'Heavy Dragon-Bane Kanabo',
-    avatarUrl: '/mascot/mascot_guard.png',
+    avatarUrl: '/avatars/warrior.png',
     aiPersonality: {
       traits: ['Bold', 'Decisive', 'Confident', 'Strong opinions'],
       description:
@@ -129,7 +129,7 @@ export const SAMURAI_ARCHETYPES: SamuraiArchetype[] = [
     color: '#10B981',
     accentColor: '#34D399',
     weapon: 'Elder Bamboo Staff & Bokken',
-    avatarUrl: '/mascot/mascot_ready.png',
+    avatarUrl: '/avatars/sensei.png',
     aiPersonality: {
       traits: ['Patient', 'Educational', 'Balanced', 'Professional'],
       description:
@@ -159,7 +159,7 @@ export const SAMURAI_ARCHETYPES: SamuraiArchetype[] = [
     color: '#EC4899',
     accentColor: '#F472B6',
     weapon: 'Weathered Naginata & Concealed Dagger',
-    avatarUrl: '/mascot/mascot_excited.png',
+    avatarUrl: '/avatars/ronin.png',
     aiPersonality: {
       traits: ['Unconventional', 'Independent', 'Provocative', 'Contrarian'],
       description:

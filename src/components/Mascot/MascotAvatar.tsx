@@ -22,16 +22,16 @@ export const MascotAvatar: React.FC<MascotAvatarProps> = ({
   return (
     <div className={`relative inline-block ${className}`}>
       <div
-        className={`${sizeClass} rounded-full overflow-hidden border-2 border-[#E3262E]/60 shadow-lg shadow-[#E3262E]/20 bg-[#080808] transition-transform hover:scale-105`}
+        className={`${sizeClass} rounded-full overflow-hidden border-2 border-[#9333EA]/60 shadow-lg shadow-[#9333EA]/20 bg-[#080808] transition-transform hover:scale-105`}
       >
         <img
-          src="/mascot/avatar.png"
+          src="/avatars/hunter.png"
           alt="SocialSamurai Avatar"
           className="w-full h-full object-cover"
         />
       </div>
       {statusDot && (
-        <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#E3262E] border-2 border-[#080808] rounded-full animate-pulse" />
+        <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#9333EA] border-2 border-[#080808] rounded-full animate-pulse" />
       )}
     </div>
   );
