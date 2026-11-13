@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://socialsamurai.dev/sitemap.xml
