@@ -1,343 +1,245 @@
 import React, { createContext, useContext, useState } from 'react';
-import confetti from 'canvas-confetti';
-import {
-  ViewTab,
-  SocialAccount,
-  Opportunity,
-  ScheduledPost,
+import type {
+  AutomationRule,
+  BrandProfile,
+  Draft,
   InboxItem,
-  AIPreferenceRule,
-  UserSubscription,
-  UserUsageLimits,
   NotificationItem,
+  Opportunity,
   PlatformType,
+  ReplyTone,
+  ScheduledPost,
+  SocialAccount,
+  ViewTab,
 } from '../types';
 import {
+  CREDITS,
   INITIAL_ACCOUNTS,
-  INITIAL_OPPORTUNITIES,
-  INITIAL_SCHEDULED,
+  INITIAL_DRAFTS,
   INITIAL_INBOX,
-  INITIAL_PREFERENCES,
-  INITIAL_SUBSCRIPTION,
-  INITIAL_LIMITS,
+  INITIAL_KEYWORDS,
   INITIAL_NOTIFICATIONS,
-  MOCK_KEYWORDS,
+  INITIAL_OPPORTUNITIES,
+  INITIAL_PROFILE,
+  INITIAL_RULES,
+  INITIAL_SCHEDULED,
 } from '../data/mockData';
-import { sounds } from '../utils/audio';
+
+export type AppEntry = 'signup' | 'login' | 'demo' | 'arena';
+
+export type Toast = { id: number; text: string };
 
 interface AppContextType {
   currentView: ViewTab;
   setCurrentView: (tab: ViewTab) => void;
-  subscription: UserSubscription;
-  usageLimits: UserUsageLimits;
-  accounts: SocialAccount[];
-  opportunities: Opportunity[];
-  scheduledPosts: ScheduledPost[];
-  inbox: InboxItem[];
-  preferences: AIPreferenceRule[];
-  notifications: NotificationItem[];
-  keywords: string[];
-  demoMode: boolean;
   onboardingComplete: boolean;
-
-  // Modals & Drawers
-  activeReplyModal: Opportunity | null;
-  setActiveReplyModal: (opp: Opportunity | null) => void;
-  activeUpgradeModal: boolean;
-  setActiveUpgradeModal: (open: boolean) => void;
-  activeSuccessModal: boolean;
-  setActiveSuccessModal: (open: boolean) => void;
-  activeScanningModal: boolean;
-  setActiveScanningModal: (open: boolean) => void;
-  activeOAuthModal: SocialAccount | null;
-  setActiveOAuthModal: (acc: SocialAccount | null) => void;
-
-  // Actions
-  scanForOpportunities: () => void;
-  approveAndPublishReply: (oppId: string, replyText: string) => boolean;
-  dismissOpportunity: (oppId: string) => void;
-  saveOpportunity: (oppId: string) => void;
-  scheduleNewPost: (post: Omit<ScheduledPost, 'id'>) => boolean;
-  upgradeSubscription: (billingCycle: 'monthly' | 'yearly') => void;
-  earnGameCredits: (score: number) => number;
-  useUserCredits: (amount: number) => boolean;
-  toggleConnectPlatform: (platform: PlatformType) => void;
-  addKeyword: (kw: string) => void;
-  removeKeyword: (kw: string) => void;
-  markNotificationRead: (id: string) => void;
-  finishOnboarding: (goals: string[], keywords: string[]) => void;
-  toggleDemoMode: () => void;
-  /** Entry point from the marketing site into the app prototype. */
   enterApp: (destination: AppEntry) => void;
-}
+  finishOnboarding: (patch: Partial<BrandProfile>, keywords: string[]) => void;
 
-export type AppEntry = 'signup' | 'login' | 'demo' | 'arena';
+  profile: BrandProfile;
+  updateProfile: (patch: Partial<BrandProfile>) => void;
+  keywords: string[];
+  addKeyword: (k: string) => void;
+  removeKeyword: (k: string) => void;
+
+  accounts: SocialAccount[];
+  connectAccount: (p: PlatformType) => void;
+  disconnectAccount: (p: PlatformType) => void;
+  anyConnected: boolean;
+
+  opportunities: Opportunity[];
+  setOpportunityStatus: (id: string, status: Opportunity['status']) => void;
+  refreshOpportunities: () => void;
+
+  drafts: Draft[];
+  studioFor: string | null;
+  openStudio: (opportunityId: string) => void;
+  closeStudio: () => void;
+  saveDraft: (opportunityId: string, tone: ReplyTone, text: string) => void;
+  approveDraft: (opportunityId: string, tone: ReplyTone, text: string) => void;
+  discardDraft: (opportunityId: string) => void;
+
+  scheduled: ScheduledPost[];
+  schedulePost: (p: Omit<ScheduledPost, 'id'>) => void;
+  removePost: (id: string) => void;
+
+  inbox: InboxItem[];
+  markRead: (id: string) => void;
+
+  notifications: NotificationItem[];
+  markAllNotificationsRead: () => void;
+
+  rules: AutomationRule[];
+  toggleRule: (id: string) => void;
+
+  credits: number;
+  creditsMax: number;
+  earnCredits: (score: number) => number;
+
+  pricingOpen: boolean;
+  setPricingOpen: (v: boolean) => void;
+
+  toasts: Toast[];
+  toast: (text: string) => void;
+}
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+const nowLabel = () => new Date().toLocaleString(undefined, { hour: 'numeric', minute: '2-digit' });
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentView, setCurrentViewTab] = useState<ViewTab>('landing');
-  const [subscription, setSubscription] = useState<UserSubscription>(INITIAL_SUBSCRIPTION);
-  const [usageLimits, setUsageLimits] = useState<UserUsageLimits>(INITIAL_LIMITS);
+  const [currentView, setView] = useState<ViewTab>('landing');
+  const [onboardingComplete, setOnboardingComplete] = useState(true);
+  const [profile, setProfile] = useState<BrandProfile>(INITIAL_PROFILE);
+  const [keywords, setKeywords] = useState<string[]>(INITIAL_KEYWORDS);
   const [accounts, setAccounts] = useState<SocialAccount[]>(INITIAL_ACCOUNTS);
   const [opportunities, setOpportunities] = useState<Opportunity[]>(INITIAL_OPPORTUNITIES);
-  const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>(INITIAL_SCHEDULED);
+  const [drafts, setDrafts] = useState<Draft[]>(INITIAL_DRAFTS);
+  const [studioFor, setStudioFor] = useState<string | null>(null);
+  const [scheduled, setScheduled] = useState<ScheduledPost[]>(INITIAL_SCHEDULED);
   const [inbox, setInbox] = useState<InboxItem[]>(INITIAL_INBOX);
-  const [preferences] = useState<AIPreferenceRule[]>(INITIAL_PREFERENCES);
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
-  const [keywords, setKeywords] = useState<string[]>(MOCK_KEYWORDS);
-  const [demoMode, setDemoMode] = useState<boolean>(true);
-  const [onboardingComplete, setOnboardingComplete] = useState<boolean>(true);
+  const [rules, setRules] = useState<AutomationRule[]>(INITIAL_RULES);
+  const [credits, setCredits] = useState(CREDITS.start);
+  const [pricingOpen, setPricingOpen] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
-  // Modals
-  const [activeReplyModal, setActiveReplyModal] = useState<Opportunity | null>(null);
-  const [activeUpgradeModal, setActiveUpgradeModal] = useState<boolean>(false);
-  const [activeSuccessModal, setActiveSuccessModal] = useState<boolean>(false);
-  const [activeScanningModal, setActiveScanningModal] = useState<boolean>(false);
-  const [activeOAuthModal, setActiveOAuthModal] = useState<SocialAccount | null>(null);
+  const toast = (text: string) => {
+    const id = Date.now() + Math.random();
+    setToasts((t) => [...t, { id, text }]);
+    window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3600);
+  };
+
+  const notify = (title: string, message: string) =>
+    setNotifications((n) => [{ id: `n${Date.now()}`, title, message, age: nowLabel(), read: false }, ...n]);
 
   const setCurrentView = (tab: ViewTab) => {
-    sounds.playClick();
-    setCurrentViewTab(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setView(tab);
+    window.scrollTo({ top: 0 });
   };
 
-  const useUserCredits = (amount: number): boolean => {
-    if (subscription.plan === 'samurai') return true; // Unlimited for Samurai
-    if (usageLimits.dailyCreditsCount < amount) {
-      sounds.playBlock();
-      setActiveUpgradeModal(true);
-      return false;
-    }
-    setUsageLimits((prev) => ({
-      ...prev,
-      dailyCreditsCount: prev.dailyCreditsCount - amount,
-    }));
-    return true;
+  const enterApp = (destination: AppEntry) => {
+    setOnboardingComplete(destination !== 'signup');
+    setView(destination === 'arena' ? 'battle' : 'dashboard');
+    window.scrollTo({ top: 0 });
   };
 
-  const scanForOpportunities = () => {
-    sounds.playScanBeep();
-    setActiveScanningModal(true);
-  };
-
-  const approveAndPublishReply = (oppId: string, replyText: string): boolean => {
-    if (subscription.plan === 'free' && usageLimits.monthlyRepliesCount >= usageLimits.monthlyRepliesMax) {
-      setActiveUpgradeModal(true);
-      return false;
-    }
-
-    if (!useUserCredits(5)) {
-      return false;
-    }
-
-    sounds.playVictory();
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#9333EA', '#FFFFFF', '#C084FC', '#7E22CE'],
-    });
-
-    setOpportunities((prev) =>
-      prev.map((o) => (o.id === oppId ? { ...o, replied: true } : o))
-    );
-
-    setUsageLimits((prev) => ({
-      ...prev,
-      monthlyRepliesCount: prev.monthlyRepliesCount + 1,
-    }));
-
-    // Add push notification
-    const newNotif: NotificationItem = {
-      id: `notif_${Date.now()}`,
-      title: '⚔️ Clean Strike Published!',
-      message: `Your reply was approved & queued for publishing.`,
-      type: 'published',
-      timestamp: 'Just now',
-      read: false,
-    };
-    setNotifications((prev) => [newNotif, ...prev]);
-
-    return true;
-  };
-
-  const dismissOpportunity = (oppId: string) => {
-    sounds.playClick();
-    setOpportunities((prev) => prev.map((o) => (o.id === oppId ? { ...o, dismissed: true } : o)));
-  };
-
-  const saveOpportunity = (oppId: string) => {
-    sounds.playClick();
-    setOpportunities((prev) =>
-      prev.map((o) => (o.id === oppId ? { ...o, saved: !o.saved } : o))
-    );
-  };
-
-  const scheduleNewPost = (post: Omit<ScheduledPost, 'id'>): boolean => {
-    if (subscription.plan === 'free' && scheduledPosts.length >= 3) {
-      setActiveUpgradeModal(true);
-      return false;
-    }
-
-    sounds.playClick();
-    const newPost: ScheduledPost = {
-      ...post,
-      id: `sch_${Date.now()}`,
-    };
-    setScheduledPosts((prev) => [newPost, ...prev]);
-    return true;
-  };
-
-  const earnGameCredits = (score: number): number => {
-    let earned = 2;
-    if (score > 800) earned = 10;
-    else if (score > 500) earned = 8;
-    else if (score > 200) earned = 5;
-
-    const remainingToCap = Math.max(0, usageLimits.dailyCreditsMax - usageLimits.dailyCreditsCount);
-    const actualAdded = Math.min(earned, remainingToCap);
-
-    if (actualAdded > 0) {
-      setUsageLimits((prev) => ({
-        ...prev,
-        dailyCreditsCount: prev.dailyCreditsCount + actualAdded,
-      }));
-    }
-    return actualAdded;
-  };
-
-  const upgradeSubscription = (billingCycle: 'monthly' | 'yearly') => {
-    sounds.playVictory();
-    setSubscription({
-      plan: 'samurai',
-      billingCycle,
-      renewsAt: '2027-08-16T00:00:00Z',
-      entitlement: 'samurai_pro',
-    });
-    setUsageLimits((prev) => ({
-      ...prev,
-      dailyOpportunitiesMax: 25,
-      monthlyRepliesMax: 9999,
-      monthlyPostsMax: 9999,
-      dailyCreditsMax: 50,
-      dailyCreditsCount: 50,
-    }));
-    setActiveUpgradeModal(false);
-    setActiveSuccessModal(true);
-
-    confetti({
-      particleCount: 150,
-      spread: 100,
-      origin: { y: 0.5 },
-      colors: ['#E3262E', '#FFFFFF', '#FFD700'],
-    });
-  };
-
-  const toggleConnectPlatform = (platform: PlatformType) => {
-    const acc = accounts.find((a) => a.platform === platform);
-    if (!acc) return;
-    if (acc.connected) {
-      // Disconnect
-      sounds.playClick();
-      setAccounts((prev) =>
-        prev.map((a) => (a.platform === platform ? { ...a, connected: false } : a))
-      );
-    } else {
-      // Open OAuth Modal simulation
-      setActiveOAuthModal(acc);
-    }
-  };
-
-  const addKeyword = (kw: string) => {
-    if (!kw.trim() || keywords.includes(kw.trim())) return;
-    sounds.playClick();
-    setKeywords((prev) => [...prev, kw.trim()]);
-  };
-
-  const removeKeyword = (kw: string) => {
-    sounds.playClick();
-    setKeywords((prev) => prev.filter((k) => k !== kw));
-  };
-
-  const markNotificationRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-  };
-
-  const finishOnboarding = (goals: string[], newKws: string[]) => {
-    if (newKws.length > 0) setKeywords(newKws);
+  const finishOnboarding = (patch: Partial<BrandProfile>, kws: string[]) => {
+    setProfile((p) => ({ ...p, ...patch }));
+    if (kws.length) setKeywords(kws);
     setOnboardingComplete(true);
     setCurrentView('dashboard');
   };
 
-  const enterApp = (destination: AppEntry) => {
-    if (destination === 'signup') {
-      // New users start with onboarding (choose a Samurai, set up the brand).
-      setOnboardingComplete(false);
-      setCurrentView('dashboard');
-      return;
-    }
-    setOnboardingComplete(true);
-    if (destination === 'demo') setDemoMode(true);
-    setCurrentView(destination === 'arena' ? 'battle' : 'dashboard');
+  const anyConnected = accounts.some((a) => a.connected);
+  const platformName = (p: PlatformType) => (p === 'x' ? 'X' : 'Reddit');
+
+  const upsertDraft = (opportunityId: string, tone: ReplyTone, text: string, status: Draft['status']) => {
+    setDrafts((ds) => {
+      const rest = ds.filter((d) => d.opportunityId !== opportunityId);
+      return [{ id: `d_${opportunityId}`, opportunityId, tone, text, status, updatedAt: nowLabel() }, ...rest];
+    });
   };
 
-  const toggleDemoMode = () => {
-    setDemoMode(!demoMode);
+  const value: AppContextType = {
+    currentView,
+    setCurrentView,
+    onboardingComplete,
+    enterApp,
+    finishOnboarding,
+
+    profile,
+    updateProfile: (patch) => setProfile((p) => ({ ...p, ...patch })),
+    keywords,
+    addKeyword: (k) => {
+      const v = k.trim();
+      if (v && !keywords.includes(v)) setKeywords((ks) => [...ks, v]);
+    },
+    removeKeyword: (k) => setKeywords((ks) => ks.filter((x) => x !== k)),
+
+    accounts,
+    anyConnected,
+    connectAccount: (p) => {
+      setAccounts((as) => as.map((a) => (a.platform === p ? { ...a, connected: true, handle: p === 'x' ? '@socialsamurai' : 'u/socialsamurai' } : a)));
+      toast(`${platformName(p)} connected (simulated)`);
+    },
+    disconnectAccount: (p) => {
+      setAccounts((as) => as.map((a) => (a.platform === p ? { ...a, connected: false, handle: undefined } : a)));
+      toast(`${platformName(p)} disconnected`);
+    },
+
+    opportunities,
+    setOpportunityStatus: (id, status) => setOpportunities((os) => os.map((o) => (o.id === id ? { ...o, status } : o))),
+    refreshOpportunities: () => {
+      setOpportunities((os) => os.map((o) => (o.status === 'dismissed' ? { ...o, status: 'new' } : o)));
+      toast('Sample opportunities refreshed');
+    },
+
+    drafts,
+    studioFor,
+    openStudio: (id) => setStudioFor(id),
+    closeStudio: () => setStudioFor(null),
+    saveDraft: (id, tone, text) => {
+      upsertDraft(id, tone, text, 'awaiting');
+      setOpportunities((os) => os.map((o) => (o.id === id && o.status !== 'approved' ? { ...o, status: 'drafted' } : o)));
+      toast('Draft saved');
+    },
+    approveDraft: (id, tone, text) => {
+      upsertDraft(id, tone, text, 'approved');
+      setOpportunities((os) => os.map((o) => (o.id === id ? { ...o, status: 'approved' } : o)));
+      const msg = anyConnected
+        ? 'Approved. In the preview, publishing is simulated — nothing was posted.'
+        : 'Approved. Connect X or Reddit to publish once live connections launch.';
+      toast('Reply approved');
+      notify('Reply approved', msg);
+    },
+    discardDraft: (id) => {
+      setDrafts((ds) => ds.filter((d) => d.opportunityId !== id));
+      setOpportunities((os) => os.map((o) => (o.id === id ? { ...o, status: 'new' } : o)));
+      toast('Draft discarded');
+    },
+
+    scheduled,
+    schedulePost: (p) => {
+      setScheduled((s) => [...s, { ...p, id: `s${Date.now()}` }].sort((a, b) => a.when.localeCompare(b.when)));
+      toast(p.status === 'draft' ? 'Saved to drafts' : 'Post scheduled');
+    },
+    removePost: (id) => {
+      setScheduled((s) => s.filter((x) => x.id !== id));
+      toast('Post removed');
+    },
+
+    inbox,
+    markRead: (id) => setInbox((i) => i.map((x) => (x.id === id ? { ...x, read: true } : x))),
+
+    notifications,
+    markAllNotificationsRead: () => setNotifications((n) => n.map((x) => ({ ...x, read: true }))),
+
+    rules,
+    toggleRule: (id) => setRules((r) => r.map((x) => (x.id === id ? { ...x, enabled: !x.enabled } : x))),
+
+    credits,
+    creditsMax: CREDITS.max,
+    earnCredits: (score) => {
+      const earned = score > 800 ? 4 : score > 400 ? 3 : score > 150 ? 2 : 1;
+      const added = Math.min(earned, CREDITS.max - credits);
+      if (added > 0) setCredits((c) => c + added);
+      return added;
+    },
+
+    pricingOpen,
+    setPricingOpen,
+
+    toasts,
+    toast,
   };
 
-  return (
-    <AppContext.Provider
-      value={{
-        currentView,
-        setCurrentView,
-        subscription,
-        usageLimits,
-        accounts,
-        opportunities,
-        scheduledPosts,
-        inbox,
-        preferences,
-        notifications,
-        keywords,
-        demoMode,
-        onboardingComplete,
-        activeReplyModal,
-        setActiveReplyModal,
-        activeUpgradeModal,
-        setActiveUpgradeModal,
-        activeSuccessModal,
-        setActiveSuccessModal,
-        activeScanningModal,
-        setActiveScanningModal,
-        activeOAuthModal,
-        setActiveOAuthModal,
-        scanForOpportunities,
-        approveAndPublishReply,
-        dismissOpportunity,
-        saveOpportunity,
-        scheduleNewPost,
-        upgradeSubscription,
-        earnGameCredits,
-        useUserCredits,
-        toggleConnectPlatform,
-        addKeyword,
-        removeKeyword,
-        markNotificationRead,
-        finishOnboarding,
-        toggleDemoMode,
-        enterApp,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useApp = () => {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
-  return context;
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error('useApp must be used within an AppProvider');
+  return ctx;
 };

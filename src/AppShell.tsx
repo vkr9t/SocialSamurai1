@@ -1,76 +1,53 @@
-/** Authenticated-area shell (prototype). Lazy-loaded so the marketing site stays light. */
-import React, { useState } from 'react';
+/** Signed-in workspace (interactive preview). Lazy-loaded so the marketing site stays light. */
+import React from 'react';
+import { MotionConfig } from 'framer-motion';
 import { useApp } from './context/AppContext';
-import { Sidebar } from './components/Layout/Sidebar';
-import { Header } from './components/Layout/Header';
-import { MobileNav } from './components/Layout/MobileNav';
-
-// Views
-import { DashboardView } from './components/Dashboard/DashboardView';
-import { OpportunitiesView } from './components/Opportunities/OpportunitiesView';
-import { CreateView } from './components/Composer/CreateView';
-import { InboxView } from './components/Inbox/InboxView';
-import { CalendarView } from './components/Calendar/CalendarView';
-import { AnalyticsView } from './components/Analytics/AnalyticsView';
-import { BattleView } from './components/Battle/BattleView';
-import { ConnectionsView } from './components/Connections/ConnectionsView';
-import { AutomationView } from './components/Automation/AutomationView';
-import { SettingsView } from './components/Settings/SettingsView';
-
-// Modals & Onboarding
-import { WelcomeModal } from './components/Onboarding/WelcomeModal';
-import { OnboardingFlow } from './components/Onboarding/OnboardingFlow';
-import { ReplyModal } from './components/Composer/ReplyModal';
-import { ScanningModal } from './components/Opportunities/ScanningModal';
-import { OAuthModal } from './components/Connections/OAuthModal';
-import { PricingModal } from './components/Subscription/PricingModal';
-import { SuccessModal } from './components/Subscription/SuccessModal';
+import { PricingDialog, Sidebar, Toasts, Topbar } from './app/Shell';
+import { ReplyStudio } from './app/ReplyStudio';
+import { Onboarding } from './app/Onboarding';
+import { Overview } from './app/views/Overview';
+import { Opportunities } from './app/views/Opportunities';
+import { Drafts } from './app/views/Drafts';
+import { Create } from './app/views/Create';
+import { Inbox } from './app/views/Inbox';
+import { Calendar } from './app/views/Calendar';
+import { Analytics } from './app/views/Analytics';
+import { Arena } from './app/views/Arena';
+import { Automations, Connections, Settings } from './app/views/Setup';
 
 const AppShell: React.FC = () => {
   const { currentView, onboardingComplete } = useApp();
-  const [showOnboardingFlow, setShowOnboardingFlow] = useState<boolean>(false);
 
-  // If onboarding not completed yet
-  if (!onboardingComplete) {
-    if (showOnboardingFlow) {
-      return <OnboardingFlow />;
-    }
-    return <WelcomeModal onStartOnboarding={() => setShowOnboardingFlow(true)} />;
-  }
+  if (!onboardingComplete) return <Onboarding />;
 
   return (
-    <div className="min-h-screen bg-[#08080C] text-[#F5F5F5] font-sans flex flex-col md:flex-row antialiased selection:bg-[#9333EA] selection:text-white">
-      {/* Desktop Sidebar */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-8">
-        <Header />
-
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {currentView === 'dashboard' && <DashboardView />}
-          {currentView === 'opportunities' && <OpportunitiesView />}
-          {currentView === 'create' && <CreateView />}
-          {currentView === 'inbox' && <InboxView />}
-          {currentView === 'calendar' && <CalendarView />}
-          {currentView === 'analytics' && <AnalyticsView />}
-          {currentView === 'battle' && <BattleView />}
-          {currentView === 'connections' && <ConnectionsView />}
-          {currentView === 'automation' && <AutomationView />}
-          {currentView === 'settings' && <SettingsView />}
-        </main>
+    <MotionConfig reducedMotion="user">
+      <div className="si flex min-h-screen bg-graphite text-paper">
+        <a href="#workspace" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-black">
+          Skip to content
+        </a>
+        <Sidebar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Topbar />
+          <main id="workspace" className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            {currentView === 'dashboard' && <Overview />}
+            {currentView === 'opportunities' && <Opportunities />}
+            {currentView === 'drafts' && <Drafts />}
+            {currentView === 'create' && <Create />}
+            {currentView === 'inbox' && <Inbox />}
+            {currentView === 'calendar' && <Calendar />}
+            {currentView === 'analytics' && <Analytics />}
+            {currentView === 'battle' && <Arena />}
+            {currentView === 'connections' && <Connections />}
+            {currentView === 'automation' && <Automations />}
+            {currentView === 'settings' && <Settings />}
+          </main>
+        </div>
+        <ReplyStudio />
+        <PricingDialog />
+        <Toasts />
       </div>
-
-      {/* Mobile Bottom Nav */}
-      <MobileNav />
-
-      {/* Modals */}
-      <ReplyModal />
-      <ScanningModal />
-      <OAuthModal />
-      <PricingModal />
-      <SuccessModal />
-    </div>
+    </MotionConfig>
   );
 };
 
