@@ -67,7 +67,11 @@ interface AppContextType {
   markNotificationRead: (id: string) => void;
   finishOnboarding: (goals: string[], keywords: string[]) => void;
   toggleDemoMode: () => void;
+  /** Entry point from the marketing site into the app prototype. */
+  enterApp: (destination: AppEntry) => void;
 }
+
+export type AppEntry = 'signup' | 'login' | 'demo' | 'arena';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -266,6 +270,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCurrentView('dashboard');
   };
 
+  const enterApp = (destination: AppEntry) => {
+    if (destination === 'signup') {
+      // New users start with onboarding (choose a Samurai, set up the brand).
+      setOnboardingComplete(false);
+      setCurrentView('dashboard');
+      return;
+    }
+    setOnboardingComplete(true);
+    if (destination === 'demo') setDemoMode(true);
+    setCurrentView(destination === 'arena' ? 'battle' : 'dashboard');
+  };
+
   const toggleDemoMode = () => {
     setDemoMode(!demoMode);
   };
@@ -310,6 +326,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         markNotificationRead,
         finishOnboarding,
         toggleDemoMode,
+        enterApp,
       }}
     >
       {children}

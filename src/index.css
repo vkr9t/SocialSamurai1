@@ -1,86 +1,133 @@
 @import "tailwindcss";
+@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource-variable/geist";
+
+/* Kanji accents: Noto Serif JP 600 subset to the ~30 glyphs the site uses
+   (scripts/subset-jp-font.py). Licensed under the SIL Open Font License. */
+@font-face {
+  font-family: "Samurai JP";
+  src: url("/fonts/samurai-jp.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------------
+   SocialSamurai — "Steel & Ink" design tokens
+   Palette is the brand set; pure black matches the guideline artwork.
+   ------------------------------------------------------------------ */
+@theme {
+  --color-void: #000000;         /* page                               */
+  --color-charcoal: #1a1a1a;     /* raised surfaces                    */
+  --color-graphite: #111111;     /* quiet bands                        */
+  --color-steel: #e5e5e5;        /* secondary text, silver accents     */
+  --color-paper: #ffffff;        /* primary text, primary buttons      */
+  --color-samurai: #8b5cf6;      /* glow, active, focus                */
+  --color-deep: #5b21b6;         /* depth                              */
+
+  --font-display: "Archivo Variable", "Archivo", "Arial Black", sans-serif;
+  --font-sans: "Geist Variable", "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-jp: "Samurai JP", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+
+  --ease-blade: cubic-bezier(0.65, 0, 0.15, 1);
+}
 
 @layer base {
   :root {
-    --font-heading: 'Oswald', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: var(--font-display); /* used by the app views */
+    color-scheme: dark;
   }
-
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
-    background-color: #08080C;
-    color: #F5F5F5;
+    background-color: #000;
+    color: #f5f5f5;
     font-family: var(--font-sans);
     overflow-x: hidden;
   }
+  h1, h2, h3, .font-heading, .heading-oswald { font-family: var(--font-display); }
 
-  h1, h2, h3, .font-heading, .heading-oswald {
-    font-family: var(--font-heading);
-    letter-spacing: -0.01em;
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ------------------------------------------------------------------
+   Marketing site, scoped under .si
+   ------------------------------------------------------------------ */
+.si { background: var(--color-void); color: var(--color-paper); }
+.si section[id] { scroll-margin-top: 72px; }
+.si :focus-visible { outline: 2px solid var(--color-samurai); outline-offset: 3px; border-radius: 6px; }
+
+/* Display: Archivo Expanded, sentence case, tight */
+.si-d {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 760;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
 }
-::-webkit-scrollbar-track {
-  background: #08080C;
+.si-d-med { font-family: var(--font-display); font-stretch: 112%; font-weight: 560; letter-spacing: -0.02em; }
+.si-xl { font-size: clamp(2.6rem, 0.9rem + 6.6vw, 7.6rem); }
+.si-l  { font-size: clamp(2.1rem, 1.1rem + 3.6vw, 4.6rem); }
+.si-m  { font-size: clamp(1.45rem, 1.1rem + 1.2vw, 2.1rem); line-height: 1.08; }
+.si-body { font-size: clamp(1.02rem, 0.97rem + 0.25vw, 1.18rem); line-height: 1.62; }
+.si-jp { font-family: var(--font-jp); font-weight: 600; }
+.si-vertical { writing-mode: vertical-rl; text-orientation: upright; letter-spacing: 0.35em; }
+
+.si-dim { color: rgb(229 229 229 / 0.7); }
+.si-line { border-color: rgb(255 255 255 / 0.1); }
+
+/* Primary action: steel-white pill with a violet edge-glow on hover */
+.si-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+  height: 3.25rem; padding: 0 1.6rem; border-radius: 999px;
+  font-weight: 600; font-size: 0.98rem; white-space: nowrap;
+  transition: box-shadow .35s var(--ease-blade), transform .2s, background-color .2s, color .2s;
 }
-::-webkit-scrollbar-thumb {
-  background: #1E1B2E;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #9333EA;
+.si-btn-primary { background: #fff; color: #000; box-shadow: 0 0 0 0 rgb(139 92 246 / 0); }
+.si-btn-primary:hover { box-shadow: 0 0 0 4px rgb(139 92 246 / 0.35), 0 18px 50px -12px rgb(139 92 246 / 0.7); }
+.si-btn-ghost { color: #fff; border: 1px solid rgb(255 255 255 / 0.22); }
+.si-btn-ghost:hover { border-color: rgb(255 255 255 / 0.6); background: rgb(255 255 255 / 0.04); }
+.si-btn:active { transform: translateY(1px); }
+
+/* Outline numerals */
+.si-outline { color: transparent; -webkit-text-stroke: 1.5px rgb(139 92 246 / 0.85); }
+
+/* Hero art blend: soft vignette into black on every side */
+.si-art-mask {
+  -webkit-mask-image: radial-gradient(ellipse 62% 64% at 50% 44%, #000 52%, transparent 100%);
+  mask-image: radial-gradient(ellipse 62% 64% at 50% 44%, #000 52%, transparent 100%);
 }
 
-/* Glow & Neon Effects */
-.purple-glow {
-  box-shadow: 0 0 25px -5px rgba(147, 51, 234, 0.4), 0 0 10px -2px rgba(168, 85, 247, 0.3);
-}
+@keyframes si-ember { 0%, 100% { opacity: .45 } 50% { opacity: .8 } }
+.si-ember { animation: si-ember 7s ease-in-out infinite; }
 
-.purple-glow-lg {
-  box-shadow: 0 0 45px -8px rgba(147, 51, 234, 0.5), 0 0 20px -3px rgba(192, 132, 252, 0.4);
-}
+/* ------------------------------------------------------------------
+   App (prototype) utilities — kept as-is
+   ------------------------------------------------------------------ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #08080c; }
+::-webkit-scrollbar-thumb { background: #1e1b2e; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9333ea; }
 
-.purple-glow-sm {
-  box-shadow: 0 0 15px -3px rgba(147, 51, 234, 0.35);
-}
+.purple-glow { box-shadow: 0 0 25px -5px rgba(147, 51, 234, 0.4), 0 0 10px -2px rgba(168, 85, 247, 0.3); }
+.purple-glow-lg { box-shadow: 0 0 45px -8px rgba(147, 51, 234, 0.5), 0 0 20px -3px rgba(192, 132, 252, 0.4); }
+.purple-glow-sm { box-shadow: 0 0 15px -3px rgba(147, 51, 234, 0.35); }
+.purple-text-glow { text-shadow: 0 0 20px rgba(168, 85, 247, 0.6), 0 0 40px rgba(147, 51, 234, 0.4); }
+.katana-slash-border { border-image: linear-gradient(135deg, #9333ea, transparent 60%, #c084fc) 1; }
 
-.purple-text-glow {
-  text-shadow: 0 0 20px rgba(168, 85, 247, 0.6), 0 0 40px rgba(147, 51, 234, 0.4);
-}
-
-.katana-slash-border {
-  border-image: linear-gradient(135deg, #9333EA, transparent 60%, #C084FC) 1;
-}
-
-/* Animations */
 @keyframes aura-pulse {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
 }
-
-.animate-aura {
-  animation: aura-pulse 4s ease-in-out infinite;
-}
+.animate-aura { animation: aura-pulse 4s ease-in-out infinite; }
 
 @keyframes float-slow {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }
-
-.animate-float {
-  animation: float-slow 3s ease-in-out infinite;
-}
+.animate-float { animation: float-slow 3s ease-in-out infinite; }
